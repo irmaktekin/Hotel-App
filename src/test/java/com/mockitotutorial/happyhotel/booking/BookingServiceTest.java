@@ -2,6 +2,7 @@ package com.mockitotutorial.happyhotel.booking;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -83,9 +84,9 @@ class BookingServiceTest {
     void shouldCountAvailablePlaces_When_CalledMultipleTimes() {
         //given
         when(this.roomServiceMock.getAvailableRooms())
-                .thenReturn(Collections.singletonList(new Room("Room 1",5)))
+                .thenReturn(Collections.singletonList(new Room("Room 1", 5)))
                 .thenReturn(Collections.emptyList());
-        int expectedFirstCall= 5;
+        int expectedFirstCall = 5;
         int expectedSecondCall = 0;
         //when
         int actualFirst = bookingService.getAvailablePlaceCount();
@@ -93,10 +94,23 @@ class BookingServiceTest {
 
         //then
         assertAll(
-                ()->assertEquals(expectedFirstCall,actualFirst),
-                ()->assertEquals(expectedSecondCall,actualSecond)
+                () -> assertEquals(expectedFirstCall, actualFirst),
+                () -> assertEquals(expectedSecondCall, actualSecond)
         );
 
-
     }
+        @Test
+        void shouldThrowException_When_NoRoomAvailable(){
+            //given
+            BookingRequest bookingRequest = new BookingRequest("1",LocalDate.of(2020,01,01),
+                    LocalDate.of(2020,01,05),2,false);
+
+            when(this.roomServiceMock.findAvailableRoomId(bookingRequest))
+                    .thenThrow(BusinessException.class);
+            //when
+            Executable executable = ()-> bookingService.makeBooking(bookingRequest);
+            //then
+            assertThrows(BusinessException.class,executable);
+        }
+
 }
