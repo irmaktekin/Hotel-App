@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,9 +27,6 @@ class BookingServiceTest {
         this.mailSenderMock = mock(MailSender.class);
         this.bookingService = new BookingService(paymentServiceMock,roomServiceMock,bookingDAOMock,mailSenderMock);
 
-        System.out.println("List returned "+ roomServiceMock.getAvailableRooms());
-        System.out.println("Object returned" + roomServiceMock.findAvailableRoomId(null));
-        System.out.println("Primitive returned " + roomServiceMock.getRoomCount());
     }
 
     @Test
@@ -52,6 +52,32 @@ class BookingServiceTest {
         //then
         assertEquals(expected,actual);
     }
+
+    @Test
+    void shouldCountAvailablePlaces_When_OneRoomAvailable(){
+        //given
+        when(this.roomServiceMock.getAvailableRooms())
+                .thenReturn(Collections.singletonList(new Room("Room 1",2)));
+        int expected = 2;
+        //when
+        int actual = bookingService.getAvailablePlaceCount();
+        //then
+        assertEquals(expected,actual);
+        }
+
+    @Test
+    void shouldCountAvailavlePlaces_When_MultipleRoomsAvailable(){
+        //given
+        List<Room> rooms = Arrays.asList(new Room("Room 1",2),new Room("Room 2",5));
+        when(this.roomServiceMock.getAvailableRooms())
+                .thenReturn(rooms);
+        int expected = 7;
+        //when
+        int actual = bookingService.getAvailablePlaceCount();
+        //then
+        assertEquals(expected,actual);
+    }
+
 
 
 
