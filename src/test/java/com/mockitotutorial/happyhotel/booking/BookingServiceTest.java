@@ -11,6 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.*;
 
 class BookingServiceTest {
 
@@ -100,13 +101,12 @@ class BookingServiceTest {
 
     }
         @Test
-        void shouldThrowException_When_NoRoomAvailable(){
+        void should_NotCompleteBooking_When_PriceTooHigh(){
             //given
-            BookingRequest bookingRequest = new BookingRequest("1",LocalDate.of(2020,01,01),
-                    LocalDate.of(2020,01,05),2,false);
+            BookingRequest bookingRequest = new BookingRequest("2",LocalDate.of(2020,01,01),
+                    LocalDate.of(2020,01,05),2,true);
 
-            when(this.roomServiceMock.findAvailableRoomId(bookingRequest))
-                    .thenThrow(BusinessException.class);
+            when(this.paymentServiceMock.pay(any(),eq(4000))).thenThrow(BusinessException.class);
             //when
             Executable executable = ()-> bookingService.makeBooking(bookingRequest);
             //then
