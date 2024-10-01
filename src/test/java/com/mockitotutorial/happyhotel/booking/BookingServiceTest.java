@@ -23,6 +23,10 @@ class BookingServiceTest {
         this.bookingDAOMock = mock(BookingDAO.class);
         this.mailSenderMock = mock(MailSender.class);
         this.bookingService = new BookingService(paymentServiceMock,roomServiceMock,bookingDAOMock,mailSenderMock);
+
+        System.out.println("List returned "+ roomServiceMock.getAvailableRooms());
+        System.out.println("Object returned" + roomServiceMock.findAvailableRoomId(null));
+        System.out.println("Primitive returned " + roomServiceMock.getRoomCount());
     }
 
     @Test
@@ -33,6 +37,17 @@ class BookingServiceTest {
 
         //when
         double actual =  bookingService.calculatePrice(bookingRequest);
+
+        //then
+        assertEquals(expected,actual);
+    }
+
+    @Test
+    void should_CountAvailablePlaces(){
+        //given
+        int expected =0 ;
+        //when
+        int actual = bookingService.getAvailablePlaceCount();
 
         //then
         assertEquals(expected,actual);
