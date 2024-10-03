@@ -163,5 +163,25 @@ class BookingServiceTest {
         System.out.println("bookingID="+ bookingId);
 
     }
+    @Test
+    void should_ThrowException_When_MailNotReady(){
+        //given
+        BookingRequest bookingRequest = new BookingRequest("1", LocalDate.of(2020, 01, 01), LocalDate.of(2020, 01, 05), 2, false);
+        doThrow(new BusinessException()).when(mailSenderMock).sendBookingConfirmation(any());
+        //when
+        Executable executable = () -> bookingService.makeBooking(bookingRequest);
+        //then
+        assertThrows(BusinessException.class,executable);
+    }
 
+    @Test
+    void should_NotThrowException_When_MailNotReady(){
+        //given
+        BookingRequest bookingRequest = new BookingRequest("1", LocalDate.of(2020, 01, 01), LocalDate.of(2020, 01, 05), 2, false);
+        //doNothing().when(mailSenderMock).sendBookingConfirmation(any());
+        //when
+        bookingService.makeBooking(bookingRequest);
+        //then
+        //no exception thrown
+    }
 }
