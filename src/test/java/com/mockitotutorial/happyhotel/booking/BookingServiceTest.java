@@ -68,7 +68,7 @@ class BookingServiceTest {
     }
 
     @Test
-    void shouldCountAvailavlePlaces_When_MultipleRoomsAvailable() {
+    void shouldCountAvailablePlaces_When_MultipleRoomsAvailable() {
         //given
         List<Room> rooms = Arrays.asList(new Room("Room 1", 2), new Room("Room 2", 5));
         when(this.roomServiceMock.getAvailableRooms())
@@ -112,5 +112,29 @@ class BookingServiceTest {
             //then
             assertThrows(BusinessException.class,executable);
         }
+
+    @Test
+        void should_InvokePayment_When_Prepaid() {
+        //given
+        BookingRequest bookingRequest = new BookingRequest("1", LocalDate.of(2020, 01, 01), LocalDate.of(2020, 01, 05), 2, true);
+
+        //when
+        bookingService.makeBooking(bookingRequest);
+        //then
+        verify(paymentServiceMock,times(1)).pay(bookingRequest,400.0);
+        verifyNoMoreInteractions(paymentServiceMock);
+    }
+    @Test
+    void should_NotInvokePayment_When_NotPrepaid() {
+        //given
+        BookingRequest bookingRequest = new BookingRequest("1", LocalDate.of(2020, 01, 01), LocalDate.of(2020, 01, 05), 2, false);
+
+        //when
+        bookingService.makeBooking(bookingRequest);
+
+        //then
+        verify(paymentServiceMock,never()).pay(any(),anyDouble());
+
+    }
 
 }
